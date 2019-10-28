@@ -57,7 +57,8 @@ def setup(upgrade=False):
     if not fabtools.deb.is_installed('python-virtualenv'):
         fabtools.deb.install('python-virtualenv')
     # Experimental
-    require.python.virtualenv(venv_path, python_cmd=py, use_sudo=True)
+    require.python.virtualenv(
+        venv_path, python_cmd=py, use_sudo=True, venv_python=py)
     with _virtualenv(venv_path):
         require.python.pip()
         require.python.setuptools()

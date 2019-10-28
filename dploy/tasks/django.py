@@ -106,7 +106,7 @@ def dumpdata(app, dest=None):
     else:
         tmp_file = '/tmp/{}.tmp'.format(app)
         django_manage('dumpdata --indent=2 {} > {}'.format(app, tmp_file))
-        with open(dest, 'w+') as fd:
+        with open(dest, 'wb') as fd:
             get(tmp_file, fd, use_sudo=True)
         sudo('rm -f {}'.format(tmp_file))
 

@@ -17,7 +17,7 @@ def pip(i):
 
 
 def python(i):
-    if ctx('python.version') == 3:
+    if str(ctx('python.version')).startswith('3'):
         return venv('python3 {}'.format(i))
     else:
         return venv('python2 {}'.format(i))
