@@ -26,7 +26,7 @@ DPLOY_FILE = os.path.join(PROJECT_DIR, 'dploy.yml')
 FAB_FILE = os.path.join(PROJECT_DIR, 'fabfile.py')
 DPLOY_DIR = os.path.join(PROJECT_DIR, 'dploy')
 
-TEMPLATES_DIR = os.path.realpath(os.path.join(__file__, '../../../templates'))
+TEMPLATES_DIR = os.path.realpath(os.path.join(__file__, '../../templates'))
 DPLOY_TEMPLATE = os.path.join(TEMPLATES_DIR, 'dploy.yml.template')
 FABFILE_TEMPLATE = os.path.join(TEMPLATES_DIR, 'fabfile.py.template')
 

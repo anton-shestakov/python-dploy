@@ -52,7 +52,7 @@ def get_template_dir(name):
     if os.path.exists(local_path):
         return 'dploy/'
     package_path = os.path.realpath(os.path.join(
-        os.path.dirname(dploy.__file__), '../templates'))
+        os.path.dirname(dploy.__file__), 'templates'))
     if os.path.exists(os.path.join(package_path, name)):
         return package_path
     return None
