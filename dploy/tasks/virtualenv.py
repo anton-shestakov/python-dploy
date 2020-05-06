@@ -4,7 +4,7 @@ import fabtools
 from fabtools import require
 from fabtools.python import virtualenv as _virtualenv
 from fabric.contrib import files
-from fabric.api import task, env, execute, cd
+from fabric.api import task, env, execute, cd, run, sudo
 from fabric.colors import cyan
 from dploy.context import ctx, get_project_dir
 
