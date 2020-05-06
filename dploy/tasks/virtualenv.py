@@ -9,8 +9,54 @@ from fabric.colors import cyan
 from dploy.context import ctx, get_project_dir
 
 
+def _install_requirements(
+        filename, upgrade=False, download_cache=None, allow_external=None,
+        allow_unverified=None, quiet=False, pip_cmd='pip', use_sudo=False,
+        user=None, exists_action=None, upgrade_strategy='only-if-needed'):
+    """
+    Install Python packages from a pip `requirements file`_.
+
+    ::
+
+        import fabtools
+
+        fabtools.python.install_requirements('project/requirements.txt')
+
+    .. _requirements file: http://www.pip-installer.org/en/latest/requirements.html
+    """
+    if allow_external is None:
+        allow_external = []
+
+    if allow_unverified is None:
+        allow_unverified = []
+
+    options = []
+    if upgrade:
+        options.append('--upgrade')
+    if download_cache:
+        options.append('--download-cache="%s"' % download_cache)
+    for package in allow_external:
+        options.append('--allow-external="%s"' % package)
+    for package in allow_unverified:
+        options.append('--allow-unverified="%s"' % package)
+    if quiet:
+        options.append('--quiet')
+    if exists_action:
+        options.append('--exists-action=%s' % exists_action)
+
+    options.append('--upgrade-strategy=%s' % upgrade_strategy)
+    options = ' '.join(options)
+
+    command = '%(pip_cmd)s install %(options)s -r %(filename)s' % locals()
+
+    if use_sudo:
+        sudo(command, user=user, pty=False)
+    else:
+        run(command, pty=False)
+
+
 @task
-def install_requirements(upgrade=False):
+def install_requirements(upgrade=False, upgrade_strategy='only-if-needed'):
     """
     Installs pip requirements
     """
@@ -22,15 +68,17 @@ def install_requirements(upgrade=False):
         if files.exists(requirements_pip, use_sudo=True):
             print(cyan("Installing requirements.pip on {}".format(env.stage)))
             with _virtualenv(env.venv_path):
-                fabtools.python.install_requirements(
-                    requirements_pip, upgrade=upgrade, use_sudo=True)
+                _install_requirements(
+                    requirements_pip, upgrade=upgrade, use_sudo=True,
+                    upgrade_strategy=upgrade_strategy)
 
         requirements_txt = os.path.join(project_dir, 'requirements.txt')
         if files.exists(requirements_txt, use_sudo=True):
             print(cyan("Installing requirements.txt on {}".format(env.stage)))
             with _virtualenv(env.venv_path):
-                fabtools.python.install_requirements(
-                    requirements_txt, upgrade=upgrade, use_sudo=True)
+                _install_requirements(
+                    requirements_txt, upgrade=upgrade, use_sudo=True,
+                    upgrade_strategy=upgrade_strategy)
 
         extra_requirements = ctx('virtualenv.extra_requirements',
                                  default=False)
@@ -44,7 +92,7 @@ def install_requirements(upgrade=False):
 
 
 @task
-def setup(upgrade=False):
+def setup(upgrade=False, upgrade_strategy='only-if-needed'):
     """
     Setup virtualenv on the remote location
     """
@@ -62,7 +110,7 @@ def setup(upgrade=False):
     with _virtualenv(venv_path):
         require.python.pip()
         require.python.setuptools()
-    execute(install_requirements, upgrade=upgrade)
+    execute(install_requirements, upgrade=upgrade, upgrade_strategy=upgrade_strategy)
     # /Experimental
 
     # lib_root = os.path.join(venv_root, venv_name, 'lib')
